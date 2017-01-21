@@ -2,7 +2,7 @@ pragma solidity ^0.4.8;
 
 contract CreditContractInterface{
 	function AcceptBill(address chargee) returns (bool success);
-	function PayBill(address chargee);
+	function PayBill(address chargee, address charger, uint end);
 }
 
 contract Bill{
@@ -26,7 +26,7 @@ contract Bill{
 	}
 
 	function Accept() returns (bool success){
-
+		if (accepted || paid) return false;
 		if (now > end) return false;
 		if (msg.sender != chargee) return false;
 		accepted = true;
@@ -38,9 +38,10 @@ contract Bill{
 		if (msg.sender != chargee) return false;
 		if (msg.value < amount) return false;
 		if (!charger.send(msg.value)) return false;
+		if (!accepted || paid) return false;
 		if(msg.value>amount && !chargee.send(msg.value-amount)) return false;
 		paid = true;
-		creditContract.PayBill(msg.sender);
+		creditContract.PayBill(msg.sender, charger, end);
 		return true;
 	}
 }

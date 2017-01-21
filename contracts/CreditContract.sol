@@ -10,8 +10,14 @@ contract CreditContract {
     mapping (address => mapping(uint => address)) public outgoingBills;
     mapping (address => uint) public outgoingBillsCount;
     int private range; 
+    int private maxReturn;
+    int private acceptPrice;
+    int private maxDays;
     
     function CreditContract(){
+        range = 1000000;
+        maxReturn = 100;
+        acceptPrice = 50;
 	}
 
     function AddBill(address _chargee, uint _amount, uint _end) returns (address bill){
@@ -26,35 +32,38 @@ contract CreditContract {
     }
 
     function AcceptBill(address chargee) returns(bool success){
-    	credits[chargee] -= calculateCredits(chargee) / 2;
+    	credits[chargee] -= acceptPrice;
+        checkRange(chargee);
     	return true;
     }
 
-    function PayBill(address chargee) {
-    	if (now > Bill(msg.sender).end())
-    		credits[chargee] += calculateNegativeCredits(int(now - Bill(msg.sender).end()), credits[chargee]);
-    	else
-    		int creditOfReciever = credits[Bill(msg.sender).charger()];    	
+    function PayBill(address chargee, address charger, uint end) {
+    	if (now > end){
 
-    		credits[chargee] += calculate(credits[chargee], creditOfReciever);
+    		credits[chargee] += calculateLateReturn(int(now - end), credits[chargee] - credits[charger]);
+        }else{
+            credits[chargee] += calculatePossitiveCredits(credits[chargee] - credits[charger]);
+            credits[chargee] += acceptPrice;
+        }
+
+        checkRange(chargee);
+    }
+    function checkRange(address chargee){
+        if (credits[chargee] >= range) {
+            credits[chargee] = range;
+        }
+        if (credits[chargee] <= -range){
+            credits[chargee] = -range;
+        }
     }
 
-    function calculateNegativeCredits(int howLate, int prevValue) returns(int) {
-    	int numberOfDaysDelayed = howLate / 1 days;
-    	return prevValue - ((1 - 1 / (1 + numberOfDaysDelayed)) / 10);
+    function calculatePossitiveCredits(int difference) returns (int possitiveCredits){
+        return maxReturn / 2 - difference * maxReturn / 4 /range;
     }
 
-    function calculateCredits(address chargee) returns(int) {
-
-    	int chargeeCredit = credits[Bill(msg.sender).charger()];
-
-    	int prevCredit = credits[Bill(msg.sender).chargee()];
-
-    	return calculate(prevCredit, chargeeCredit);
+    function calculateLateReturn(int delay, int difference) returns (int lateReturnCredits){
+        return calculatePossitiveCredits(difference) * (maxDays - delay/1 days)/maxDays; 
     }
 
-    function calculate(int prevValue, int creditOfOpponent) returns(int) {
-    	return range - range / (1 + creditOfOpponent);
-    }
-
+ 
 }

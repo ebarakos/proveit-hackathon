@@ -1,5 +1,7 @@
 	pragma solidity ^0.4.8;
 
+import './Bill.sol';
+
 contract CreditContract {
 
 	mapping (address => int) public credits;
@@ -55,46 +57,4 @@ contract CreditContract {
     	return range - range / (1 + creditOfOpponent);
     }
 
-}
-
-contract Bill {
-    
-	address public charger;
-	address public chargee;
-	uint public amount;
-	uint public end;
-	bool public accepted;
-	bool public paid;
-	CreditContract public creditContract;
-
-	function Bill(address _chargee, address _charger, uint _amount, uint _end){
-		end = _end;
-		charger = _charger;
-		chargee = _chargee;
-		amount = _amount;
-		accepted = false;
-		paid=false;
-		creditContract = CreditContract(msg.sender);
-	}
-
-	function Accept() returns(bool success){
-
-		if (now > end) return false;
-		if (msg.sender != chargee) return false;
-		accepted = true;
-		creditContract.AcceptBill(msg.sender);
-		return true;
-	}
-
-	function Pay() payable returns(bool success){
-		if (msg.sender != chargee) return false;
-		if (msg.value < amount) return false;
-		if (!charger.send(msg.value)) return false;
-		if(msg.value < amount || !chargee.send(msg.value-amount)) 
-			return false;
-		paid = true;
-		creditContract.PayBill(msg.sender);
-		
-		return true;
-	}
 }

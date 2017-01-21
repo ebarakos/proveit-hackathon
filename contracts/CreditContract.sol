@@ -8,7 +8,7 @@ contract CreditContract {
     mapping (address => mapping(uint => address)) public outgoingBills;
     mapping (address => uint) public outgoingBillsCount;
     
-    function CreditContract() {
+    function CreditContract(){
 	}
 
     function AddBill(address _chargee, uint _amount, uint _end) returns (address bill){
@@ -26,6 +26,7 @@ contract CreditContract {
     	credits[chargee] -= 5;
     	return true;
     }
+
     function PayBill(address chargee){
     	uint credit = 6;
     	if (now > Bill(msg.sender).end()) credit = 4;
@@ -43,8 +44,7 @@ contract Bill{
 	bool public paid;
 	CreditContract public creditContract;
 
-	
-	function Bill(address _chargee, address _charger, uint _amount, uint _end) {
+	function Bill(address _chargee, address _charger, uint _amount, uint _end){
 		end = _end;
 		charger = _charger;
 		chargee = _chargee;
@@ -271,7 +271,7 @@ contract Bill{
 
 
     ............
-    
+
 	function Pay() payable returns(bool success){
 		if (msg.sender != chargee) return false;
 		if (msg.value < amount) return false;

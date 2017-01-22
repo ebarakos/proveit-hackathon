@@ -3,7 +3,19 @@ import BillList from './BillList.js'
 import CreditContract from 'contracts/CreditContract.sol';
 import Bill from 'contracts/Bill.sol';
 import BillModal from './BillModal.js';
+
+import Paper from 'material-ui/Paper';
 import Web3 from 'web3';
+import {Tabs, Tab} from 'material-ui/Tabs';
+
+
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import RefreshIcon from 'material-ui/svg-icons/action/autorenew';
+import AddIcon from 'material-ui/svg-icons/content/add';
+
+
+import RaisedButton from 'material-ui/RaisedButton';
+import TextField from 'material-ui/TextField'
 
 const provider = new Web3.providers.HttpProvider('http://localhost:8545')
 CreditContract.setProvider(provider);
@@ -54,7 +66,6 @@ class BillsListContainer extends Component {
               return this._getBillData(address).then(this._billListToObject)
             }.bind(this)
           )).then(function(bills){
-            console.log(bills)
             this.setState({ingoing:bills})
           }.bind(this))
         }.bind(this)) 
@@ -102,7 +113,6 @@ class BillsListContainer extends Component {
   _getMyCredit(account){
     let creditContract = CreditContract.deployed();
     creditContract.credits(account).then(function(credit){
-      console.log(credit)
       this.setState({credit:credit.valueOf()})
     }.bind(this));
   
@@ -124,7 +134,13 @@ class BillsListContainer extends Component {
       this.setState({coinbase: accs[0]})
       this._getBills(accs[0])
       this._getMyCredit(accs[0])
+      this._getMyBalance(accs[0])
+    }.bind(this))
+  }
 
+  _getMyBalance(account){
+    this.props.web3.eth.getBalance.request(account, function(value){
+      this.setState({balance: value.valueOf()})
     }.bind(this))
   }
 
@@ -158,11 +174,16 @@ class BillsListContainer extends Component {
   render() {
     return (
       <div>
-        <h1>Account: {this.state.coinbase}</h1>
-        <h1>Credit: {this.state.credit}</h1>
-        <button
-          onClick={this._getAccountBills.bind(this)}
-        > Refresh</button>
+        <div style={{marginTop:40, marginLeft:300, marginRight:300}}>
+        <Paper zDepth={3} style={{left:'25%', textAlign:'center', padding:10}}>
+          <h3>Account: {this.state.coinbase}</h3>
+          <h3>Credit: {this.state.credit}</h3>
+          <FloatingActionButton onClick={this._getAccountBills.bind(this)}>
+            <RefreshIcon/>
+          </FloatingActionButton>
+          
+        </Paper>
+      </div>
         <BillModal 
           isOpen={this.state.modalOpen}
           unsuccessfullClose={
@@ -175,28 +196,49 @@ class BillsListContainer extends Component {
               this._newBill(bill)
               this.setState({modalOpen:false})
             }
-          }/>
-        <div style={{borderWidth:1, borderColor:'black', border:'solid'}}>
-          <h1>Outgoing bills</h1>
-          <BillList items={this.state.outgoing} />
-          <button onClick={()=>{this.setState({modalOpen:true})}}>New</button>
-        </div>
-        <div style={{borderWidth:1, borderColor:'black',  border:'solid'}}>
-          <h1>Incoming bills</h1>
-          <BillList items={this.state.ingoing}
-           incoming={true}
-           accept={this._acceptBill.bind(this)}
-           pay={this._payBill.bind(this)} />
-        </div>
+          }>
+          <h3>Check credit</h3>
+          <Paper zDepth={1} style={{textAlign:'center', padding:50}}>
 
-        <div style={{borderWidth:1, borderColor:'black', border:'solid'}}>
-          <h1>Check credit</h1>
-          <input type="text" ref={(input) => this.checkAccountInput = input} />
-          { this.state.checkedCredit }
-          <button onClick={()=>{
-            this._getCredit(this.checkAccountInput.value)
-          }}>Check</button>
-        </div>
+            
+            <TextField type="text" ref={(input) => this.checkAccountInput = input} />
+            <Paper zDepth={0} style={{margin:30}}>
+              { this.state.checkedCredit }
+            </Paper>
+            <RaisedButton onClick={()=>{
+              this._getCredit(this.checkAccountInput.input.value)
+            }}>
+              Check
+            </RaisedButton>
+            
+          </Paper>
+        </BillModal>
+
+        <Paper zDepth={3} style={{marginLeft:20, marginRight:20, marginTop:'50px', padding:10}}>
+          <Tabs>
+            <Tab label="Outgoing bills" >
+              <div>
+                
+                <BillList items={this.state.outgoing} />
+                <FloatingActionButton onClick={()=>{this.setState({modalOpen:true})}}>
+                  <AddIcon/>
+                </FloatingActionButton>
+              </div>
+            </Tab>
+
+            <Tab label="Incoming bills" >
+              <div>
+                <BillList items={this.state.ingoing}
+                 incoming={true}
+                 accept={this._acceptBill.bind(this)}
+                 pay={this._payBill.bind(this)} />
+              </div>
+            </Tab>
+          </Tabs>
+        </Paper>
+        
+
+        
         
       </div>
     )

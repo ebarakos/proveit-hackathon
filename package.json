@@ -43,7 +43,9 @@
     "webpack-dev-server": "1.14.1"
   },
   "dependencies": {
-    "react-modal": "^1.6.5"
+    "material-ui": "^0.16.7",
+    "react-modal": "^1.6.5",
+    "react-tap-event-plugin": "^2.0.1"
   },
   "scripts": {
     "start": "node ./scripts/start.js",

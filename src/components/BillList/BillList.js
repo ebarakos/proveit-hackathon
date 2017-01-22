@@ -1,60 +1,65 @@
 
 import React, { Component } from 'react'
-import './BillList.css'
+import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
+import RaisedButton from 'material-ui/RaisedButton';
+
 
 class BillList extends Component {
   render() {
     return (
       <div>
-        <table>
-          <thead>
-            <tr>
-              <td>Charger</td>
-              <td>Chargee</td>
-              <td>Amount</td>
-              <td>End</td>
-              <td>Accepted</td>
-              <td>Paid</td>
+      <Table
+        selectable={false}>
+        <TableHeader displaySelectAll={false} enableSelectAll={false}>
+          <TableRow>
+            <TableHeaderColumn>Charger</TableHeaderColumn>
+              <TableHeaderColumn>Chargee</TableHeaderColumn>
+              <TableHeaderColumn>Amount</TableHeaderColumn>
+              <TableHeaderColumn>End</TableHeaderColumn>
+              <TableHeaderColumn>Accepted</TableHeaderColumn>
+              <TableHeaderColumn>Paid</TableHeaderColumn>
               {
                 this.props.incoming?[
-                  <td key={0}>Accept</td>,
-                  <td key={1}>Pay</td>
+                  <TableHeaderColumn key={0}>Accept</TableHeaderColumn>,
+                  <TableHeaderColumn key={1}>Pay</TableHeaderColumn>
                 ]:null
               }
-            </tr>
-          </thead>
-          <tbody>
+          </TableRow>
+        </TableHeader>
+          
+          <TableBody displayRowCheckbox={false}>
+     
             {this.props.items.map(this.renderAccount.bind(this))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
 
       </div>
     )
   }
 
   renderAccount(item, index) {
-    return <tr key={index}>
-      <td>{item.charger}</td>
-      <td>{item.chargee}</td>
-      <td>{item.amount.valueOf()}</td>
-      <td>{item.end.valueOf()}</td>
-      <td>{item.accepted? 'YES': 'NO'}</td>
-      <td>{item.paid? 'YES': 'NO'}</td>
+    return <TableRow key={index}>
+      <TableRowColumn>{item.charger}</TableRowColumn>
+      <TableRowColumn>{item.chargee}</TableRowColumn>
+      <TableRowColumn>{item.amount.valueOf()}</TableRowColumn>
+      <TableRowColumn>{item.end.valueOf()}</TableRowColumn>
+      <TableRowColumn>{item.accepted? 'YES': 'NO'}</TableRowColumn>
+      <TableRowColumn>{item.paid? 'YES': 'NO'}</TableRowColumn>
       {
         this.props.incoming?[
-          <td key={0}>
-            <button onClick={function(){
+          <TableRowColumn key={0}>
+            <RaisedButton onClick={function(){
               this.props.accept(item.address)
-            }.bind(this)}>Accept</button>
-          </td>,
-          <td key={1}>
-            <button onClick={function(){
+            }.bind(this)}>Accept</RaisedButton>
+          </TableRowColumn>,
+          <TableRowColumn key={1}>
+            <RaisedButton onClick={function(){
               this.props.pay(item.address)
-            }.bind(this)}>Pay</button>
-          </td>
+            }.bind(this)}>Pay</RaisedButton>
+          </TableRowColumn>
         ]:null
       }
-    </tr>
+    </TableRow>
   }
 }
 

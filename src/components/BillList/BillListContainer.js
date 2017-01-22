@@ -16,6 +16,8 @@ import AddIcon from 'material-ui/svg-icons/content/add';
 
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField'
+import Logo from './Black-Logo.png'
+
 
 const provider = new Web3.providers.HttpProvider('http://localhost:8545')
 CreditContract.setProvider(provider);
@@ -174,10 +176,11 @@ class BillsListContainer extends Component {
   render() {
     return (
       <div>
+        <img src={Logo} width={150}/>
         <div style={{marginTop:40, marginLeft:300, marginRight:300}}>
         <Paper zDepth={3} style={{left:'25%', textAlign:'center', padding:10}}>
           <h3>Account: {this.state.coinbase}</h3>
-          <h3>Credit: {this.state.credit}</h3>
+          <h3>Credit score: <span style={{color:'red'}}>{this.state.credit}</span></h3>
           <FloatingActionButton onClick={this._getAccountBills.bind(this)}>
             <RefreshIcon/>
           </FloatingActionButton>
@@ -197,13 +200,15 @@ class BillsListContainer extends Component {
               this.setState({modalOpen:false})
             }
           }>
-          <h3>Check credit</h3>
+          <h3>Check credit score</h3>
           <Paper zDepth={1} style={{textAlign:'center', padding:50}}>
 
             
-            <TextField type="text" ref={(input) => this.checkAccountInput = input} />
+            <TextField type="text" value="0xabd9053509b1509276d0737dab443f57f8ee9f08" ref={(input) => this.checkAccountInput = input} />
             <Paper zDepth={0} style={{margin:30}}>
-              { this.state.checkedCredit }
+              <span style={{color:'red'}}>
+                { this.state.checkedCredit }
+              </span>
             </Paper>
             <RaisedButton onClick={()=>{
               this._getCredit(this.checkAccountInput.input.value)

@@ -12,17 +12,17 @@ class BillList extends Component {
         selectable={false}>
         <TableHeader displaySelectAll={false} enableSelectAll={false}>
           <TableRow>
-            <TableHeaderColumn>Charger</TableHeaderColumn>
-              <TableHeaderColumn>Chargee</TableHeaderColumn>
-              <TableHeaderColumn>Amount</TableHeaderColumn>
-              <TableHeaderColumn>End</TableHeaderColumn>
-              <TableHeaderColumn>Expired</TableHeaderColumn>
-              <TableHeaderColumn>Accepted</TableHeaderColumn>
-              <TableHeaderColumn>Paid</TableHeaderColumn>
+            <TableHeaderColumn><Span>Charger</Span></TableHeaderColumn>
+              <TableHeaderColumn><Span>Chargee</Span></TableHeaderColumn>
+              <TableHeaderColumn><Span>Amount</Span></TableHeaderColumn>
+              <TableHeaderColumn><Span>End</Span></TableHeaderColumn>
+              <TableHeaderColumn><Span>Expired</Span></TableHeaderColumn>
+              <TableHeaderColumn><Span>Accepted</Span></TableHeaderColumn>
+              <TableHeaderColumn><Span>Paid</Span></TableHeaderColumn>
               {
                 this.props.incoming?[
-                  <TableHeaderColumn key={0}>Accept</TableHeaderColumn>,
-                  <TableHeaderColumn key={1}>Pay</TableHeaderColumn>
+                  <TableHeaderColumn key={0}><Span>Accept</Span></TableHeaderColumn>,
+                  <TableHeaderColumn key={1}><Span>Pay</Span></TableHeaderColumn>
                 ]:null
               }
           </TableRow>

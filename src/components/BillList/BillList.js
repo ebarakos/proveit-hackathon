@@ -16,6 +16,7 @@ class BillList extends Component {
               <TableHeaderColumn>Chargee</TableHeaderColumn>
               <TableHeaderColumn>Amount</TableHeaderColumn>
               <TableHeaderColumn>End</TableHeaderColumn>
+              <TableHeaderColumn>Expired</TableHeaderColumn>
               <TableHeaderColumn>Accepted</TableHeaderColumn>
               <TableHeaderColumn>Paid</TableHeaderColumn>
               {
@@ -27,7 +28,7 @@ class BillList extends Component {
           </TableRow>
         </TableHeader>
           
-          <TableBody displayRowCheckbox={false}>
+          <TableBody displayRowCheckbox={false} style={{fontSize:15}}>
      
             {this.props.items.map(this.renderAccount.bind(this))}
           </TableBody>
@@ -39,12 +40,13 @@ class BillList extends Component {
 
   renderAccount(item, index) {
     return <TableRow key={index}>
-      <TableRowColumn>{item.charger}</TableRowColumn>
-      <TableRowColumn>{item.chargee}</TableRowColumn>
-      <TableRowColumn>{item.amount.valueOf()}</TableRowColumn>
-      <TableRowColumn>{item.end.valueOf()}</TableRowColumn>
-      <TableRowColumn>{item.accepted? 'YES': 'NO'}</TableRowColumn>
-      <TableRowColumn>{item.paid? 'YES': 'NO'}</TableRowColumn>
+      <TableRowColumn><Span>{item.charger}</Span></TableRowColumn>
+      <TableRowColumn><Span>{item.chargee}</Span></TableRowColumn>
+      <TableRowColumn><Span>{item.amount.valueOf()}</Span></TableRowColumn>
+      <TableRowColumn><Span>{item.end.valueOf()}</Span></TableRowColumn>
+      <TableRowColumn>{item.end.valueOf() > ((new Date()).valueOf() / 1000)? <Span color={'red'}>NO</Span>: <Span color={'green'}>YES</Span>}</TableRowColumn>
+      <TableRowColumn>{item.accepted? <Span color={'green'}>YES</Span>: <Span color={'red'}>NO</Span>}</TableRowColumn>
+      <TableRowColumn>{item.paid? <Span color={'green'}>YES</Span>:<Span color={'red'}>NO</Span>}</TableRowColumn>
       {
         this.props.incoming?[
           <TableRowColumn key={0}>
@@ -60,6 +62,19 @@ class BillList extends Component {
         ]:null
       }
     </TableRow>
+  }
+}
+
+class Span extends Component{
+  render(){
+    return <span style={{
+      color:this.props.color||'black',
+      fontSize:20
+    }}>
+    {
+      this.props.children
+    }
+    </span>
   }
 }
 

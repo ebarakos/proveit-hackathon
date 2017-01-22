@@ -17,7 +17,8 @@ contract CreditContract {
     function CreditContract(){
         range = 1000000;
         maxReturn = 100;
-        acceptPrice = 50;
+        acceptPrice = 25;
+        maxDays = 50;
 	}
 
     function AddBill(address _chargee, uint _amount, uint _end) returns (address bill){
@@ -62,7 +63,9 @@ contract CreditContract {
     }
 
     function calculateLateReturn(int delay, int difference) returns (int lateReturnCredits){
-        return calculatePossitiveCredits(difference) * (maxDays - delay/1 days)/maxDays; 
+        int delayDays = delay / 1 days;
+        if (delayDays > maxDays) return 0;
+        return calculatePossitiveCredits(difference) * (maxDays - delayDays)/maxDays; 
     }
 
  
